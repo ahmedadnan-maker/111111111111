@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>حروفي | Horofi</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#061a0e;
+    --bg-panel:#0d3520;
+    --bg-card:#0a2a1a;
+    --line:#1a5a2a;
+    --emerald:#00a86b;
+    --emerald-bright:#22c55e;
+    --gold:#d4af37;
+    --gold-soft:#fbbf24;
+    --text-main:#eafaf0;
+    --text-dim:#90d0a0;
+    --radius:22px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Cairo','Tajawal',sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(0,168,107,.18), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(212,175,55,.10), transparent 50%),
+      var(--bg-deep);
+    color:var(--text-main);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  body[dir="ltr"]{font-family:'Tajawal','Cairo',sans-serif;}
+
+  .screen{ display:none; min-height:100vh; flex-direction:column; }
+  .screen.active{ display:flex; }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    background:rgba(6,26,14,.7);
+    backdrop-filter:blur(6px);
+    position:sticky; top:0; z-index:20;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:38px; height:38px; border-radius:12px;
+    background:linear-gradient(135deg,var(--emerald),var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:18px; color:#04140b;
+  }
+  .brand-name{ font-weight:900; font-size:18px; letter-spacing:.3px; }
+  .brand-name small{ display:block; font-size:10px; color:var(--text-dim); font-weight:600; letter-spacing:2px; }
+
+  .lang-toggle{
+    display:flex; background:var(--bg-panel); border:1px solid var(--line);
+    border-radius:999px; padding:4px; gap:4px;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim);
+    font-family:inherit; font-weight:700; font-size:13px;
+    padding:7px 16px; border-radius:999px; cursor:pointer;
+    transition:.25s;
+  }
+  .lang-toggle button.active{ background:var(--emerald); color:#04140b; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:48px 20px 20px; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .hero .eyebrow{
+    color:var(--gold-soft); font-size:12px; font-weight:800;
+    letter-spacing:3px; text-transform:uppercase;
+  }
+  .hero h1{
+    font-size:clamp(30px,6vw,46px); font-weight:900;
+    background:linear-gradient(90deg,var(--emerald-bright),var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p{ color:var(--text-dim); font-size:15px; max-width:480px; line-height:1.7; }
+
+  .hero-letters{
+    display:flex; gap:10px; margin-top:14px; font-size:26px; font-weight:900;
+  }
+  .hero-letters span{
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg-card); border:1px solid var(--line); color:var(--emerald-bright);
+    animation:float 3.2s ease-in-out infinite;
+  }
+  .hero-letters span:nth-child(2){ animation-delay:.2s; color:var(--gold); }
+  .hero-letters span:nth-child(3){ animation-delay:.4s; }
+  .hero-letters span:nth-child(4){ animation-delay:.6s; color:var(--gold); }
+  @keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  /* ---------- Level cards ---------- */
+  .levels{
+    flex:1; padding:10px 20px 50px; max-width:920px; width:100%; margin:0 auto;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px;
+  }
+  .level-card{
+    background:linear-gradient(160deg,var(--bg-card),var(--bg-panel));
+    border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 22px; cursor:pointer; position:relative; overflow:hidden;
+    transition:.3s; text-align:start;
+  }
+  .level-card:hover{ transform:translateY(-4px); border-color:var(--emerald); box-shadow:0 14px 34px rgba(0,168,107,.18); }
+  .level-card .badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:800; letter-spacing:1px;
+    color:#04140b; padding:5px 12px; border-radius:999px; margin-bottom:14px;
+  }
+  .level-card .age{ position:absolute; top:22px; inset-inline-end:22px; font-size:12px; color:var(--text-dim); font-weight:700; }
+  .level-card h3{ font-size:21px; font-weight:900; margin-bottom:6px; }
+  .level-card p{ color:var(--text-dim); font-size:13.5px; line-height:1.7; margin-bottom:16px; }
+  .level-card .go{ font-size:13px; font-weight:800; color:var(--emerald-bright); display:flex; align-items:center; gap:6px; }
+
+  .lvl-1 .badge{ background:var(--emerald-bright); }
+  .lvl-2 .badge{ background:var(--gold-soft); }
+  .lvl-3 .badge{ background:linear-gradient(90deg,var(--emerald),var(--gold)); }
+
+  /* ---------- Bottom quick-access ---------- */
+  .quickbar{
+    max-width:920px; width:100%; margin:0 auto 40px; padding:0 20px;
+    display:flex; gap:14px; flex-wrap:wrap; justify-content:center;
+  }
+  .quick-btn{
+    display:flex; align-items:center; gap:8px;
+    background:var(--bg-panel); border:1px solid var(--line);
+    color:var(--text-main); font-family:inherit; font-weight:700; font-size:13.5px;
+    padding:12px 20px; border-radius:14px; cursor:pointer; transition:.25s;
+  }
+  .quick-btn:hover{ border-color:var(--gold); color:var(--gold-soft); }
+
+  footer{
+    text-align:center; padding:16px; font-size:11.5px; color:var(--text-dim);
+    border-top:1px solid var(--line);
+  }
+
+  /* ---------- Placeholder inner screens ---------- */
+  .inner{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:40px 20px; text-align:center; }
+  .inner h2{ font-size:26px; font-weight:900; color:var(--gold-soft); }
+  .inner p{ color:var(--text-dim); max-width:420px; line-height:1.8; }
+  .back-btn{
+    background:var(--bg-panel); border:1px solid var(--line); color:var(--text-main);
+    font-family:inherit; font-weight:700; padding:10px 22px; border-radius:12px; cursor:pointer;
+  }
+  .back-btn:hover{ border-color:var(--emerald); }
+
+  [data-en]{ display:none; }
+  body[dir="ltr"] [data-ar]{ display:none; }
+  body[dir="ltr"] [data-en]{ display:inline; }
+</style>
+</head>
+<body dir="rtl">
+
+  <!-- ============ HOME SCREEN ============ -->
+  <div class="screen active" id="screen-home">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">ح</div>
+        <div class="brand-name">
+          حروفي <span style="color:var(--gold-soft)">| Horofi</span>
+          <small data-ar>مركز المستقبل لتطبيقات الذكاء الاصطناعي</small>
+          <small data-en>Al-Mustaqbal AI Applications Center</small>
+        </div>
+      </div>
+      <div class="lang-toggle">
+        <button id="btn-ar" class="active" onclick="setLang('ar')">عربي</button>
+        <button id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="eyebrow" data-ar>تعلّم الحروف والكتابة الصحيحة</div>
+      <div class="eyebrow" data-en>Learn Letters &amp; Correct Writing</div>
+      <h1 data-ar>أهلاً بيك في حروفي</h1>
+      <h1 data-en>Welcome to Horofi</h1>
+      <p data-ar>منصة تعليمية تفاعلية تساعد طفلك يتعلّم شكل الحرف، طريقة كتابته الصحيحة، ويرسم بحرية — بالعربي والإنجليزي.</p>
+      <p data-en>An interactive learning platform that helps your child recognize letters, write them correctly, and draw freely — in Arabic and English.</p>
+      <div class="hero-letters">
+        <span>ا</span><span>A</span><span>ب</span><span>B</span>
+      </div>
+    </div>
+
+    <div class="levels">
+      <div class="level-card lvl-1" onclick="goTo('screen-placeholder','tam')">
+        <span class="age" data-ar>3-4 سنوات</span>
+        <span class="age" data-en>Age 3-4</span>
+        <div class="badge" data-ar>تمهيدي</div>
+        <div class="badge" data-en>Starter</div>
+        <h3 data-ar>🟢 المستوى التمهيدي</h3>
+        <h3 data-en>🟢 Starter Level</h3>
+        <p data-ar>تعرّف على شكل الحرف وصوته — مشاهدة ولمس بدون كتابة.</p>
+        <p data-en>Recognize each letter's shape and sound — see and touch, no writing yet.</p>
+        <div class="go" data-ar>ابدأ ←</div>
+        <div class="go" data-en>Start →</div>
+      </div>
+
+      <div class="level-card lvl-2" onclick="goTo('screen-placeholder','asasi')">
+        <span class="age" data-ar>5-6 سنوات</span>
+        <span class="age" data-en>Age 5-6</span>
+        <div class="badge" data-ar>أساسي</div>
+        <div class="badge" data-en>Basic</div>
+        <h3 data-ar>🟡 المستوى الأساسي</h3>
+        <h3 data-en>🟡 Basic Level</h3>
+        <p data-ar>تتبّع الحرف بالإصبع أو القلم على لوحة الرسم وتقييم فوري.</p>
+        <p data-en>Trace each letter on the drawing canvas with instant feedback.</p>
+        <div class="go" data-ar>ابدأ ←</div>
+        <div class="go" data-en>Start →</div>
+      </div>
+
+      <div class="level-card lvl-3" onclick="goTo('screen-placeholder','mutaqadim')">
+        <span class="age" data-ar>7-8 سنوات</span>
+        <span class="age" data-en>Age 7-8</span>
+        <div class="badge" data-ar>متقدم</div>
+        <div class="badge" data-en>Advanced</div>
+        <h3 data-ar>🔵 المستوى المتقدم</h3>
+        <h3 data-en>🔵 Advanced Level</h3>
+        <p data-ar>كتابة الحرف من الذاكرة وتكوين كلمات بسيطة.</p>
+        <p data-en>Write letters from memory and form simple words.</p>
+        <div class="go" data-ar>ابدأ ←</div>
+        <div class="go" data-en>Start →</div>
+      </div>
+    </div>
+
+    <div class="quickbar">
+      <button class="quick-btn" onclick="goTo('screen-placeholder','draw')">
+        <span>🎨</span> <span data-ar>الرسم الحر</span><span data-en>Free Drawing</span>
+      </button>
+      <button class="quick-btn" onclick="goTo('screen-placeholder','progress')">
+        <span>⭐</span> <span data-ar>تقدّمي</span><span data-en>My Progress</span>
+      </button>
+      <button class="quick-btn" onclick="goTo('screen-placeholder','admin')">
+        <span>🔒</span> <span data-ar>لوحة الإدارة</span><span data-en>Admin Panel</span>
+      </button>
+    </div>
+
+    <footer>
+      <span data-ar>جامعة المستقبل — مركز المستقبل لتطبيقات الذكاء الاصطناعي</span>
+      <span data-en>Al-Mustaqbal University — AI Applications Center</span>
+    </footer>
+  </div>
+
+  <!-- ============ PLACEHOLDER SCREEN (يتفعّل بالخطوة الجاية) ============ -->
+  <div class="screen" id="screen-placeholder">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">ح</div>
+        <div class="brand-name">حروفي <span style="color:var(--gold-soft)">| Horofi</span></div>
+      </div>
+    </div>
+    <div class="inner">
+      <h2 id="ph-title" data-ar>قريباً 🚧</h2>
+      <p data-ar>هذا القسم رح نبنيه بالخطوة الجاية بعد ما تأكّد الهيكل العام.</p>
+      <p data-en>This section will be built in the next step, once the overall structure is confirmed.</p>
+      <button class="back-btn" onclick="goTo('screen-home')">
+        <span data-ar>⟵ رجوع للرئيسية</span><span data-en>⟵ Back Home</span>
+      </button>
+    </div>
+  </div>
+
+<script>
+  function setLang(lang){
+    document.body.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.getElementById('btn-ar').classList.toggle('active', lang==='ar');
+    document.getElementById('btn-en').classList.toggle('active', lang==='en');
+    localStorage.setItem('horofi_lang', lang);
+  }
+  function goTo(id, section){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+  // استرجاع اللغة المحفوظة
+  (function(){
+    const saved = localStorage.getItem('horofi_lang');
+    if(saved === 'en') setLang('en');
+  })();
+</script>
+</body>
+</html>
